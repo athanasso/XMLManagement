@@ -39,71 +39,75 @@ public class RawTextToXml {
         TextToXml(lines);
     }
 
-    private static void TextToXml(List<String> lines) throws FactoryConfigurationError {
-        // Create an XML output factory
-        XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+    private static void TextToXml(List<String> lines) {
+        try {
+            // Create an XML output factory
+            XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
 
-        // Create an XML stream writer
-        try ( FileOutputStream input = new FileOutputStream(xmlFileOutput)) {
-            XMLStreamWriter writer = outputFactory.createXMLStreamWriter(input, "UTF-8");
+            // Create an XML stream writer
+            try ( FileOutputStream input = new FileOutputStream(xmlFileOutput)) {
+                XMLStreamWriter writer = outputFactory.createXMLStreamWriter(input, "UTF-8");
 
-            // Write the XML document
-            writer.writeStartDocument("utf-8", "1.0");
-            writer.writeCharacters("\n");
-            writer.writeStartElement("book");
-            writer.writeCharacters("\n");
-
-            int chapterCount = 1;
-            int paragraphCount = 0;
-            int sentenceCount = 0;
-
-            while (!lines.isEmpty()) {
-                // Start a new chapter element
-                writer.writeStartElement("chapter");
-                writer.writeAttribute("number", String.valueOf(chapterCount));
+                // Write the XML document
+                writer.writeStartDocument("utf-8", "1.0");
+                writer.writeCharacters("\n");
+                writer.writeStartElement("book");
                 writer.writeCharacters("\n");
 
-                while (paragraphCount < 5 && !lines.isEmpty()) {
-                    if (sentenceCount == 0) {
-                        // Start a new paragraph element
-                        writer.writeStartElement("paragraph");
-                        writer.writeCharacters("\n");
+                int chapterCount = 1;
+                int paragraphCount = 0;
+                int sentenceCount = 0;
+
+                while (!lines.isEmpty()) {
+                    // Start a new chapter element
+                    writer.writeStartElement("chapter");
+                    writer.writeAttribute("number", String.valueOf(chapterCount));
+                    writer.writeCharacters("\n");
+
+                    while (paragraphCount < 5 && !lines.isEmpty()) {
+                        if (sentenceCount == 0) {
+                            // Start a new paragraph element
+                            writer.writeStartElement("paragraph");
+                            writer.writeCharacters("\n");
+                        }
+
+                        // Write a sentence element only if the line is not empty
+                        if (!lines.get(0).trim().isEmpty()) {
+                            writer.writeCharacters("    ");
+                            writer.writeStartElement("sentence");
+                            writer.writeCharacters(lines.remove(0));
+                            EndElement(writer);
+                        } else {
+                            lines.remove(0);
+                        }
+
+                        sentenceCount++;
+
+                        if (sentenceCount == 8 || lines.isEmpty()) {
+                            // End the current paragraph element
+                            EndElement(writer);
+
+                            // Reset sentence count for the next paragraph
+                            sentenceCount = 0;
+                            paragraphCount++;
+                        }
                     }
 
-                    // Write a sentence element only if the line is not empty
-                    if (!lines.get(0).trim().isEmpty()) {
-                        writer.writeCharacters("    ");
-                        writer.writeStartElement("sentence");
-                        writer.writeCharacters(lines.remove(0));
-                        EndElement(writer);
-                    } else {
-                        lines.remove(0);
-                    }
+                    // End the current chapter element
+                    EndElement(writer);
 
-                    sentenceCount++;
-
-                    if (sentenceCount == 8 || lines.isEmpty()) {
-                        // End the current paragraph element
-                        EndElement(writer);
-
-                        // Reset sentence count for the next paragraph
-                        sentenceCount = 0;
-                        paragraphCount++;
-                    }
+                    paragraphCount = 0;
+                    chapterCount++;
                 }
 
-                // End the current chapter element
                 EndElement(writer);
+                writer.writeEndDocument();
+                writer.flush();
 
-                paragraphCount = 0;
-                chapterCount++;
+            } catch (XMLStreamException | IOException ex) {
+                Logger.getLogger(RawTextToXml.class.getName()).log(Level.SEVERE, null, ex);
             }
-
-            EndElement(writer);
-            writer.writeEndDocument();
-            writer.flush();
-
-        } catch (XMLStreamException | IOException ex) {
+        } catch (FactoryConfigurationError ex) {
             Logger.getLogger(RawTextToXml.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -116,6 +120,5 @@ public class RawTextToXml {
         } catch (XMLStreamException ex) {
             Logger.getLogger(RawTextToXml.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }
 }
