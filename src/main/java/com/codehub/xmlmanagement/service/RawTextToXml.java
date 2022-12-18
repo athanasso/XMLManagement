@@ -59,6 +59,7 @@ public class RawTextToXml {
 
                 while (!lines.isEmpty()) {
                     // Start a new chapter element
+                    writer.writeCharacters("\t");
                     writer.writeStartElement("chapter");
                     writer.writeAttribute("number", String.valueOf(chapterCount));
                     writer.writeCharacters("\n");
@@ -66,12 +67,13 @@ public class RawTextToXml {
                     while (paragraphCount < 5 && !lines.isEmpty()) {
                         if (sentenceCount == 0) {
                             // Start a new paragraph element
+                            writer.writeCharacters("\t\t");
                             StartElement(writer, "paragraph");
                         }
 
                         // Write a sentence element only if the line is not empty
                         if (!lines.get(0).trim().isEmpty()) {
-                            writer.writeCharacters("    ");
+                            writer.writeCharacters("\t\t\t");
                             writer.writeStartElement("sentence");
                             writer.writeCharacters(lines.remove(0));
                             EndElement(writer);
@@ -83,6 +85,7 @@ public class RawTextToXml {
 
                         if (sentenceCount == 8 || lines.isEmpty()) {
                             // End the current paragraph element
+                            writer.writeCharacters("\t\t");
                             EndElement(writer);
 
                             // Reset sentence count for the next paragraph
@@ -92,6 +95,7 @@ public class RawTextToXml {
                     }
 
                     // End the current chapter element
+                    writer.writeCharacters("\t");
                     EndElement(writer);
 
                     paragraphCount = 0;
