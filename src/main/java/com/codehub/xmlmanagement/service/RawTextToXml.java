@@ -48,63 +48,66 @@ public class RawTextToXml {
             // Create an XML output factory
             XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
 
-            // Create an XML stream writer
-            try ( FileOutputStream input = new FileOutputStream(xmlFileOutput)) {
-                XMLStreamWriter writer = outputFactory.createXMLStreamWriter(input, "UTF-8");
+             // Create an XML stream writer
+        try ( FileOutputStream input = new FileOutputStream(xmlFileOutput)) {
+            XMLStreamWriter writer = outputFactory.createXMLStreamWriter(input, "UTF-8");
 
-                // Write the XML document
-                writer.writeStartDocument("utf-8", "1.0");
+            // Write the XML document
+            writer.writeStartDocument("utf-8", "1.0");
+            writer.writeCharacters("\n");
+            StartElement(writer, "book");
+
+            while (!lines.isEmpty()) {
+                // Start a new chapter element
+                writer.writeCharacters("\t");
+                writer.writeStartElement("chapter");
+                writer.writeAttribute("number", String.valueOf(chapterCount));
                 writer.writeCharacters("\n");
-                StartElement(writer, "book");
 
-                while (!lines.isEmpty()) {
-                    // Start a new chapter element
-                    writer.writeCharacters("\t");
-                    writer.writeStartElement("chapter");
-                    writer.writeAttribute("number", String.valueOf(chapterCount));
-                    writer.writeCharacters("\n");
-
-                    while (paragraphCount < 5 && !lines.isEmpty()) {
-                        if (sentenceCount == 0) {
-                            // Start a new paragraph element
-                            writer.writeCharacters("\t\t");
-                            StartElement(writer, "paragraph");
-                        }
-
-                        // Write a sentence element only if the line is not empty
-                        if (!lines.get(0).trim().isEmpty()) {
-                            writer.writeCharacters("\t\t\t");
-                            writer.writeStartElement("sentence");
-                            writer.writeCharacters(lines.remove(0));
-                            EndElement(writer);
-                        } else {
-                            lines.remove(0);
-                        }
-
-                        sentenceCount++;
-
-                        if (sentenceCount == 8 || lines.isEmpty()) {
-                            // End the current paragraph element
-                            writer.writeCharacters("\t\t");
-                            EndElement(writer);
-
-                            // Reset sentence count for the next paragraph
-                            sentenceCount = 0;
-                            paragraphCount++;
-                        }
+                while (paragraphCount < 5 && !lines.isEmpty()) {
+                    if (sentenceCount == 0) {
+                        // Start a new paragraph element
+                        writer.writeCharacters("\t\t");
+                        StartElement(writer, "paragraph");
                     }
 
-                    // End the current chapter element
-                    writer.writeCharacters("\t");
-                    EndElement(writer);
+                    // Split line into sentences and write each sentence element
+                    String[] sentences = lines.get(0).split("\\.");
+                    for (String sentence : sentences) {
+                        // Write a sentence element only if the sentence is not empty
+                        if (!sentence.trim().isEmpty()) {
+                            writer.writeCharacters("\t\t\t");
+                            writer.writeStartElement("sentence");
+                            writer.writeCharacters(sentence + ".");
+                            EndElement(writer);
+                        }
+                    }
+                    lines.remove(0);
 
-                    paragraphCount = 0;
-                    chapterCount++;
+                    sentenceCount++;
+
+                    if (sentenceCount == 8 || lines.isEmpty()) {
+                        // End the current paragraph element
+                        writer.writeCharacters("\t\t");
+                        EndElement(writer);
+
+                        // Reset sentence count for the next paragraph
+                        sentenceCount = 0;
+                        paragraphCount++;
+                    }
                 }
 
+                // End the current chapter element
+                writer.writeCharacters("\t");
                 EndElement(writer);
-                writer.writeEndDocument();
-                writer.flush();
+
+                paragraphCount = 0;
+                chapterCount++;
+            }
+
+            EndElement(writer);
+            writer.writeEndDocument();
+            writer.flush();
 
             } catch (XMLStreamException | IOException ex) {
                 Logger.getLogger(RawTextToXml.class.getName()).log(Level.SEVERE, null, ex);
