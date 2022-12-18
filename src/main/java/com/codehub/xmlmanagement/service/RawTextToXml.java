@@ -40,6 +40,10 @@ public class RawTextToXml {
     }
 
     private static void TextToXml(List<String> lines) {
+        int chapterCount = 1;
+        int paragraphCount = 0;
+        int sentenceCount = 0;
+
         try {
             // Create an XML output factory
             XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
@@ -51,12 +55,7 @@ public class RawTextToXml {
                 // Write the XML document
                 writer.writeStartDocument("utf-8", "1.0");
                 writer.writeCharacters("\n");
-                writer.writeStartElement("book");
-                writer.writeCharacters("\n");
-
-                int chapterCount = 1;
-                int paragraphCount = 0;
-                int sentenceCount = 0;
+                StartElement(writer, "book");
 
                 while (!lines.isEmpty()) {
                     // Start a new chapter element
@@ -67,8 +66,7 @@ public class RawTextToXml {
                     while (paragraphCount < 5 && !lines.isEmpty()) {
                         if (sentenceCount == 0) {
                             // Start a new paragraph element
-                            writer.writeStartElement("paragraph");
-                            writer.writeCharacters("\n");
+                            StartElement(writer, "paragraph");
                         }
 
                         // Write a sentence element only if the line is not empty
@@ -114,8 +112,18 @@ public class RawTextToXml {
 
     private static void EndElement(XMLStreamWriter writer) {
         try {
-            // End the book element
+            // End an element
             writer.writeEndElement();
+            writer.writeCharacters("\n");
+        } catch (XMLStreamException ex) {
+            Logger.getLogger(RawTextToXml.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private static void StartElement(XMLStreamWriter writer, String element) {
+        try {
+            // Start an element
+            writer.writeStartElement(element);
             writer.writeCharacters("\n");
         } catch (XMLStreamException ex) {
             Logger.getLogger(RawTextToXml.class.getName()).log(Level.SEVERE, null, ex);
