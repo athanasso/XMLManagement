@@ -3,18 +3,19 @@
   <xs:element name="book">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="chapter" type="xs:string" minOccurs="1" maxOccurs="unbounded">
+        <xs:element name="chapter" maxOccurs="unbounded">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="paragraph" type="xs:string" minOccurs="1" maxOccurs="unbounded">
+              <xs:element name="paragraph" maxOccurs="unbounded">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element name="sentence" type="xs:string" minOccurs="1" maxOccurs="unbounded"/>
+                    <xs:element name="sentence" type="xs:string" maxOccurs="unbounded"/>
                   </xs:sequence>
+                  <xs:attribute name="number" type="xs:int"/>
                 </xs:complexType>
               </xs:element>
             </xs:sequence>
-            <xs:attribute name="number" type="xs:integer"/>
+            <xs:attribute name="number" type="xs:int"/>
           </xs:complexType>
         </xs:element>
       </xs:sequence>
