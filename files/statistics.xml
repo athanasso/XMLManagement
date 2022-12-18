@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <statistics>
     <paragraphs>713</paragraphs>
-    <sentences>2850</sentences>
-    <words>322392</words>
-    <distinctWords>515</distinctWords>
+    <sentences>43011</sentences>
+    <words>362553</words>
+    <distinctWords>516</distinctWords>
     <creationDate>1999-05-20T00:00:00+03:00</creationDate>
     <author>test</author>
     <appClassName>test</appClassName>
