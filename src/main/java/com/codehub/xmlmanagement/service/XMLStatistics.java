@@ -9,7 +9,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
@@ -23,6 +22,10 @@ public class XMLStatistics {
 
     private static final String xmlFileInput = "files/book.xml";
     private static Statistics statistics = new Statistics();
+
+    public static Statistics getStatistics() {
+        return statistics;
+    }
 
     public static void Create() {
         Document doc = XMLParser();

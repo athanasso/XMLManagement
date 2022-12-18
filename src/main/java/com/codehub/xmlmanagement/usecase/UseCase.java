@@ -1,6 +1,7 @@
 package com.codehub.xmlmanagement.usecase;
 
 import com.codehub.xmlmanagement.service.RawTextToXml;
+import com.codehub.xmlmanagement.service.StatisticsToXML;
 import com.codehub.xmlmanagement.service.XMLStatistics;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -11,8 +12,6 @@ public class UseCase {
 
     public static void StartInterface() {
         // We check how the user want to continue. Handling the user's input if he doesn't give the correct input.
-
-        System.out.println("Reading Raw text and converting it into XML");
 
         int userChoice = Integer.MIN_VALUE;
         while (userChoice != 0) {
@@ -33,12 +32,15 @@ public class UseCase {
 
             // Based on the user choose we report back or exit the program.
             switch (userChoice) {
-                case 1 -> RawTextToXml.Run();
+                case 1 -> {
+                    System.out.println("Reading Raw text and converting it into XML please wait!");
+                    RawTextToXml.Run();
+                }
                 case 2 -> {
                     XMLStatistics.Create();
                     XMLStatistics.PrintStatistics();
                 }
-                case 3 -> System.out.println("test");
+                case 3 -> StatisticsToXML.Run();
                 case 4 -> System.out.println("test");
                 case 0 -> System.out.println("Exiting...");
             }

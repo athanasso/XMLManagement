@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<statistics>
+    <appClassName>test</appClassName>
+    <author>test</author>
+    <creationDate>1999-05-20T00:00:00+03:00</creationDate>
+    <distinctWords>515</distinctWords>
+    <paragraphs>713</paragraphs>
+    <sentences>2850</sentences>
+    <words>322392</words>
+</statistics>
