@@ -23,7 +23,7 @@ public class RawTextToXml {
     public static void Run() {
         FileReader();
     }
-    
+
     private static void FileReader() {
         // Read the raw text file
         List<String> lines = new ArrayList<>();
@@ -36,10 +36,10 @@ public class RawTextToXml {
             Logger.getLogger(RawTextToXml.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        TxtToXml(lines);
+        TextToXml(lines);
     }
 
-    private static void TxtToXml(List<String> lines) throws FactoryConfigurationError {
+    private static void TextToXml(List<String> lines) throws FactoryConfigurationError {
         // Create an XML output factory
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
 
@@ -103,18 +103,19 @@ public class RawTextToXml {
             writer.writeEndDocument();
             writer.flush();
 
-        } catch (XMLStreamException ex) {
-            Logger.getLogger(RawTextToXml.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(RawTextToXml.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
+        } catch (XMLStreamException | IOException ex) {
             Logger.getLogger(RawTextToXml.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    private static void EndElement(XMLStreamWriter writer) throws XMLStreamException {
-        // End the book element
-        writer.writeEndElement();
-        writer.writeCharacters("\n");
+    private static void EndElement(XMLStreamWriter writer) {
+        try {
+            // End the book element
+            writer.writeEndElement();
+            writer.writeCharacters("\n");
+        } catch (XMLStreamException ex) {
+            Logger.getLogger(RawTextToXml.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 }
