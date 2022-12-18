@@ -1,7 +1,9 @@
 package com.codehub.xmlmanagement.Model;
 
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
+@XmlRootElement
 public class Statistics {
     private int paragraphs;
     private int sentences;
