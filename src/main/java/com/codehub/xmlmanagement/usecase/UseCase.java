@@ -3,6 +3,7 @@ package com.codehub.xmlmanagement.usecase;
 import com.codehub.xmlmanagement.service.RawTextToXml;
 import com.codehub.xmlmanagement.service.StatisticsToXML;
 import com.codehub.xmlmanagement.service.XMLStatistics;
+import com.codehub.xmlmanagement.service.XsdForStatistics;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -42,6 +43,7 @@ public class UseCase {
                 }
                 case 3 -> StatisticsToXML.Run();
                 case 4 -> System.out.println("test");
+                case 5 -> XsdForStatistics.Run();
                 case 0 -> System.out.println("Exiting...");
             }
         }

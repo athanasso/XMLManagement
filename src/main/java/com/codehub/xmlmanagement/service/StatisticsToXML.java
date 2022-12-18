@@ -24,9 +24,7 @@ public class StatisticsToXML {
             
             // Convert the object to XML and write it to a file
             marshaller.marshal(XMLStatistics.getStatistics(), new FileOutputStream("files/statistics.xml"));
-        } catch (JAXBException ex) {
-            Logger.getLogger(StatisticsToXML.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (FileNotFoundException ex) {
+        } catch (JAXBException | FileNotFoundException ex) {
             Logger.getLogger(StatisticsToXML.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

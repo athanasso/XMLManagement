@@ -1,9 +1,11 @@
 package com.codehub.xmlmanagement.Model;
 
 import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 import java.util.Date;
 
 @XmlRootElement
+@XmlType(propOrder = {"paragraphs", "sentences", "words", "distinctWords", "creationDate", "author", "appClassName"})
 public class Statistics {
     private int paragraphs;
     private int sentences;
