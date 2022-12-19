@@ -15,16 +15,6 @@ public class Statistics {
     private String author;
     private String appClassName;
 
-    public Statistics(int paragraphs, int sentences, int words, int distinctWords, Date creationDate, String author, String appClassName) {
-        this.paragraphs = paragraphs;
-        this.sentences = sentences;
-        this.words = words;
-        this.distinctWords = distinctWords;
-        this.creationDate = creationDate;
-        this.author = author;
-        this.appClassName = appClassName;
-    }
-
     public Statistics() {
     }
     

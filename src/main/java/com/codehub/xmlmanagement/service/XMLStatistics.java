@@ -6,6 +6,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -107,13 +110,14 @@ public class XMLStatistics {
     private static Date getCreationDate(Document doc) {
         // Define the date format that the input string follows
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
         // Get a list of all the elements with the tag name "date"
         NodeList dateElement = doc.getElementsByTagName("date");
 
         // Get the text content of the first element in the list
         //String stringDate = dateElement.item(0).getTextContent();
-        String stringDate = "20-05-1999";
+        String stringDate = LocalDateTime.now().format(formatter);
 
         try {
             Date date = dateFormat.parse(stringDate);
