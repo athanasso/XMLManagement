@@ -5,6 +5,7 @@ import com.codehub.xmlmanagement.service.SchemaGenerator;
 import com.codehub.xmlmanagement.service.StatisticsToXML;
 import com.codehub.xmlmanagement.service.ValidateXML;
 import com.codehub.xmlmanagement.service.XMLStatistics;
+import com.codehub.xmlmanagement.service.XmlSpecificParagraphs;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -43,7 +44,14 @@ public class UseCase {
                     XMLStatistics.PrintStatistics();
                 }
                 case 3 -> StatisticsToXML.Run();
-                case 4 -> System.out.println("test");
+                case 4 -> {
+                    System.out.println("Input paragraph number to start");
+                    int startChoice = scanner.nextInt();
+                    System.out.println("Input paragraph number to end");
+                    int endChoice = scanner.nextInt();
+                    
+                    XmlSpecificParagraphs.Run(startChoice, endChoice);
+                }
                 case 5 -> SchemaGenerator.Run();
                 case 6 -> ValidateXML.Run();
                 case 0 -> System.out.println("Exiting...");
