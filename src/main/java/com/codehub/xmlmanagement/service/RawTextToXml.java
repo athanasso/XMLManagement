@@ -28,8 +28,8 @@ public class RawTextToXml {
         // Read the raw text file
         List<String> lines = new ArrayList<>();
         try ( BufferedReader reader = new BufferedReader(new FileReader(textInputFile))) {
-            // This method reads all the lines of the file with a Stream
-            lines = reader.lines().collect(Collectors.toList());
+            // This method reads all the lines of the file with a Stream in parallel
+            lines = reader.lines().parallel().collect(Collectors.toList());
         } catch (FileNotFoundException ex) {
             Logger.getLogger(RawTextToXml.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -43,76 +43,81 @@ public class RawTextToXml {
         int chapterCount = 1;
         int paragraphCount = 0;
         int sentenceCount = 0;
-
         try {
             // Create an XML output factory
             XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
 
-             // Create an XML stream writer
-        try ( FileOutputStream input = new FileOutputStream(xmlFileOutput)) {
-            XMLStreamWriter writer = outputFactory.createXMLStreamWriter(input, "UTF-8");
+            // Create an XML stream writer
+            try ( FileOutputStream input = new FileOutputStream(xmlFileOutput)) {
+                XMLStreamWriter writer = outputFactory.createXMLStreamWriter(input, "UTF-8");
 
-            // Write the XML document
-            writer.writeStartDocument("utf-8", "1.0");
-            writer.writeCharacters("\n");
-            StartElement(writer, "book");
-
-            while (!lines.isEmpty()) {
-                // Start a new chapter element
-                writer.writeCharacters("\t");
-                writer.writeStartElement("chapter");
-                writer.writeAttribute("number", String.valueOf(chapterCount));
+                // Write the XML document
+                writer.writeStartDocument("utf-8", "1.0");
                 writer.writeCharacters("\n");
+                StartElement(writer, "book");
 
-                while (paragraphCount < 5 && !lines.isEmpty()) {
-                    if (sentenceCount == 0) {
-                        // Start a new paragraph element
-                        writer.writeCharacters("\t\t");
-                        StartElement(writer, "paragraph");
-                    }
+                while (!lines.isEmpty()) {
+                    // Start a new chapter element
+                    writer.writeCharacters("\t");
+                    writer.writeStartElement("chapter");
+                    writer.writeAttribute("number", String.valueOf(chapterCount));
+                    writer.writeCharacters("\n");
 
-                    // Split line into sentences and write each sentence element
-                    String[] sentences = lines.get(0).split("\\.");
-                    for (String sentence : sentences) {
-                        // Write a sentence element only if the sentence is not empty
-                        if (!sentence.trim().isEmpty()) {
-                            writer.writeCharacters("\t\t\t");
-                            writer.writeStartElement("sentence");
-                            writer.writeCharacters(sentence + ".");
+                    while (paragraphCount < 5 && !lines.isEmpty()) {
+                        if (sentenceCount == 0) {
+                            // Start a new paragraph element
+                            writer.writeCharacters("\t\t");
+                            StartElement(writer, "paragraph");
+                        }
+
+                        // Split line into sentences and write each sentence element
+                        String[] sentences = lines.get(0).split("\\.");
+                        for (String sentence : sentences) {
+                            // Write a sentence element only if the sentence is not empty
+                            if (!sentence.trim().isEmpty()) {
+                                writer.writeCharacters("\t\t\t");
+                                writer.writeStartElement("sentence");
+                                writer.writeCharacters(sentence + ".");
+                                EndElement(writer);
+                            }
+                        }
+                        lines.remove(0);
+
+                        sentenceCount++;
+
+                        if (sentenceCount == 8 || lines.isEmpty()) {
+                            // End the current paragraph element
+                            writer.writeCharacters("\t\t");
                             EndElement(writer);
+
+                            // Reset sentence count for the next paragraph
+                            sentenceCount = 0;
+                            paragraphCount++;
                         }
                     }
-                    lines.remove(0);
 
-                    sentenceCount++;
+                    // End the current chapter element
+                    writer.writeCharacters("\t");
+                    EndElement(writer);
 
-                    if (sentenceCount == 8 || lines.isEmpty()) {
-                        // End the current paragraph element
-                        writer.writeCharacters("\t\t");
-                        EndElement(writer);
-
-                        // Reset sentence count for the next paragraph
-                        sentenceCount = 0;
-                        paragraphCount++;
-                    }
+                    // Reset paragraph count for the next chapter
+                    paragraphCount = 0;
+                    chapterCount++;
                 }
 
-                // End the current chapter element
-                writer.writeCharacters("\t");
+                // End the book element
                 EndElement(writer);
 
-                paragraphCount = 0;
-                chapterCount++;
-            }
+                // End the XML document
+                writer.writeEndDocument();
 
-            EndElement(writer);
-            writer.writeEndDocument();
-            writer.flush();
-
-            } catch (XMLStreamException | IOException ex) {
+                // Flush the writer
+                writer.flush();
+                
+            } catch (IOException ex) {
                 Logger.getLogger(RawTextToXml.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } catch (FactoryConfigurationError ex) {
+        } catch (XMLStreamException | FactoryConfigurationError ex) {
             Logger.getLogger(RawTextToXml.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
