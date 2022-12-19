@@ -45,12 +45,17 @@ public class UseCase {
                 }
                 case 3 -> StatisticsToXML.Run();
                 case 4 -> {
-                    System.out.println("Input paragraph number to start");
-                    int startChoice = scanner.nextInt();
-                    System.out.println("Input paragraph number to end");
-                    int endChoice = scanner.nextInt();
-                    
-                    XmlSpecificParagraphs.Run(startChoice, endChoice);
+                    try {
+                        System.out.println("Input paragraph number to start");
+                        int startChoice = scanner.nextInt();
+                        System.out.println("Input paragraph number to end");
+                        int endChoice = scanner.nextInt();
+
+                        XmlSpecificParagraphs.Run(startChoice, endChoice);             
+                    } catch (InputMismatchException ex)
+                    {
+                        System.out.println("Bad input. Please try again.\n");
+                    }
                 }
                 case 5 -> SchemaGenerator.Run();
                 case 6 -> ValidateXML.Run();
