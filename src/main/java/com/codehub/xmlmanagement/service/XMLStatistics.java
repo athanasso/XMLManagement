@@ -1,8 +1,6 @@
 package com.codehub.xmlmanagement.service;
 
 import com.codehub.xmlmanagement.Model.Statistics;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -11,12 +9,12 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 public class XMLStatistics {
 
@@ -28,121 +26,81 @@ public class XMLStatistics {
     }
 
     public static void Create() {
-        Document doc = XMLParser();
-        statistics.setParagraphs(countParagraphs(doc));
-        statistics.setSentences(countSentences(doc));
-        statistics.setWords(countWords(doc));
-        statistics.setDistinctWords(countDistinctWords(doc));
-        statistics.setCreationDate(getCreationDate(doc));
-        statistics.setAuthor(getAuthor(doc));
-        statistics.setAppClassName(getappClassName(doc));
+        parseXMLWithSAX();
     }
 
     public static void PrintStatistics() {
         System.out.println(statistics);
     }
 
-    private static Document XMLParser() {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder;
+    private static void parseXMLWithSAX() {
         try {
-            builder = factory.newDocumentBuilder();
-            Document doc = builder.parse(new FileInputStream(xmlFileInput));
-            return doc;
-        } catch (FileNotFoundException ex) {
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            SAXParser saxParser = factory.newSAXParser();
+
+            DefaultHandler handler = new DefaultHandler() {
+                // Override the startElement and endElement methods to handle the start and end of an element
+                // in the XML file
+                int wordCount = 0;
+                int sentenceCount = 0;
+                int paragraphCount = 0;
+                HashSet<String> set = new HashSet<>();
+                String author = "";
+                String appClassName = "";
+                Date creationDate = null;
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+                StringBuilder currentSentence = new StringBuilder();
+
+                @Override
+                public void startElement(String uri, String localName, String qName, Attributes attributes) {
+                    if (qName.equalsIgnoreCase("sentence")) {
+                        sentenceCount++;
+                    } else if (qName.equalsIgnoreCase("paragraph")) {
+                        paragraphCount++;
+                    } else if (qName.equalsIgnoreCase("date")) {
+                        try {
+                            creationDate = dateFormat.parse(attributes.getValue("creationDate"));
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                    } else if (qName.equalsIgnoreCase("author")) {
+                        author = attributes.getValue("name");
+                    } else if (qName.equalsIgnoreCase("app")) {
+                        appClassName = attributes.getValue("class");
+                    }
+                }
+
+                @Override
+                public void characters(char ch[], int start, int length) {
+                    currentSentence.append(ch, start, length);
+                }
+
+                @Override
+                public void endElement(String uri, String localName, String qName) {
+                    if (qName.equalsIgnoreCase("sentence")) {
+                        String[] words = currentSentence.toString().split(" ");
+                        wordCount += words.length;
+                        set.addAll(Arrays.asList(words));
+                        currentSentence.setLength(0);
+                    }
+                }
+
+                @Override
+                public void endDocument() {
+                    statistics.setParagraphs(paragraphCount);
+                    statistics.setSentences(sentenceCount);
+                    statistics.setWords(wordCount);
+                    statistics.setDistinctWords(set.size());
+                    statistics.setCreationDate(creationDate);
+                    statistics.setAuthor(author);
+                    statistics.setAppClassName(appClassName);
+                }
+            };
+
+            saxParser.parse(xmlFileInput, handler);
+        
+    }   catch (SAXException | IOException | ParserConfigurationException ex) {
             Logger.getLogger(XMLStatistics.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        } catch (SAXException | ParserConfigurationException | IOException ex) {
-            Logger.getLogger(XMLStatistics.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
         }
-    }
-
-    private static int countWords(Document doc) {
-        int wordCount = 0;
-
-        // Iterate through the DOM tree and get the text content of each element
-        NodeList elements = doc.getElementsByTagName("sentence");
-        for (int i = 0; i < elements.getLength(); i++) {
-            String textContent = elements.item(i).getTextContent();
-
-            // Split the text content into words and count them
-            String[] words = textContent.split(" ");
-            wordCount += words.length;
-        }
-        return wordCount;
-    }
-
-    private static int countDistinctWords(Document doc) {
-        HashSet<String> set = new HashSet<>();
-
-        // Iterate through the DOM tree and get the text content of each element
-        NodeList elements = doc.getElementsByTagName("sentence");
-        for (int i = 0; i < elements.getLength(); i++) {
-            String textContent = elements.item(i).getTextContent();
-
-            // Split the text content into words and add them to the set
-            String[] words = textContent.split(" ");
-            set.addAll(Arrays.asList(words));
-        }
-        return set.size();
-    }
-
-    private static int countParagraphs(Document doc) {
-        // Get a list of all the elements with the tag name "paragraph"
-        NodeList paragraphElements = doc.getElementsByTagName("paragraph");
-
-        // Count the number of elements in the list
-        return paragraphElements.getLength();
-    }
-
-    private static int countSentences(Document doc) {
-        // Get a list of all the elements with the tag name "sentence"
-        NodeList sentenceElements = doc.getElementsByTagName("sentence");
-
-        // Count the number of elements in the list
-        return sentenceElements.getLength();
-    }
-
-    private static Date getCreationDate(Document doc) {
-        // Define the date format that the input string follows
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-
-        // Get a list of all the elements with the tag name "date"
-        NodeList dateElement = doc.getElementsByTagName("date");
-
-        // Get the text content of the first element in the list
-        //String stringDate = dateElement.item(0).getTextContent();
-        String stringDate = "20-05-1999";
-
-        try {
-            Date date = dateFormat.parse(stringDate);
-            return date;
-
-        } catch (ParseException e) {
-            return null;
-        }
-    }
-
-    private static String getAuthor(Document doc) {
-        // Get a list of all the elements with the tag name "author"
-        //NodeList authorElement = doc.getElementsByTagName("author");
-
-        // Get the text content of the first element in the list
-        //String author = authorElement.item(0).getTextContent();
-        String author = "test";
-
-        return author != null ? author : " ";
-    }
-
-    private static String getappClassName(Document doc) {
-        // Get a list of all the elements with the tag name "appClass"
-        //NodeList appClassElement = doc.getElementsByTagName("appClass");
-
-        // Get the text content of the first element in the list
-        //String appClass = appClassElement.item(0).getTextContent();
-        String appClass = "test";
-
-        return appClass != null ? appClass : " ";
     }
 }
