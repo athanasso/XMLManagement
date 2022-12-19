@@ -1,6 +1,7 @@
 package com.codehub.xmlmanagement.usecase;
 
 import com.codehub.xmlmanagement.service.RawTextToXml;
+import com.codehub.xmlmanagement.service.SchemaGenerator;
 import com.codehub.xmlmanagement.service.StatisticsToXML;
 import com.codehub.xmlmanagement.service.ValidateXML;
 import com.codehub.xmlmanagement.service.XMLStatistics;
@@ -21,7 +22,8 @@ public class UseCase {
             System.out.println("\tPress 2: Create and Print Statistics for the book");
             System.out.println("\tPress 3: Create an XML of the Statistics");
             System.out.println("\tPress 4: Create XML with selected paragraphs from an existing XML");
-            System.out.println("\tPress 5: Validate the XML");
+            System.out.println("\tPress 5: Generate Xsd");
+            System.out.println("\tPress 6: Validate the XML");
             System.out.println("\tPress 0: To exit.");
             try {
                 userChoice = scanner.nextInt();
@@ -42,7 +44,8 @@ public class UseCase {
                 }
                 case 3 -> StatisticsToXML.Run();
                 case 4 -> System.out.println("test");
-                case 5 -> ValidateXML.Run();
+                case 5 -> SchemaGenerator.Run();
+                case 6 -> ValidateXML.Run();
                 case 0 -> System.out.println("Exiting...");
             }
         }

@@ -1,15 +1,17 @@
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
-  <xs:element name="statistics">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element name="paragraphs" type="xs:integer"/>
-        <xs:element name="sentences" type="xs:integer"/>
-        <xs:element name="words" type="xs:integer"/>
-        <xs:element name="distinctWords" type="xs:integer"/>
-        <xs:element name="creationDate" type="xs:dateTime"/>
-        <xs:element name="author" type="xs:string"/>
-        <xs:element name="appClassName" type="xs:string"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="statistics" type="statistics"/>
+
+  <xs:complexType name="statistics">
+    <xs:sequence>
+      <xs:element name="paragraphs" type="xs:int"/>
+      <xs:element name="sentences" type="xs:int"/>
+      <xs:element name="words" type="xs:int"/>
+      <xs:element name="distinctWords" type="xs:int"/>
+      <xs:element name="creationDate" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="author" type="xs:string" minOccurs="0"/>
+      <xs:element name="appClassName" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
 </xs:schema>
